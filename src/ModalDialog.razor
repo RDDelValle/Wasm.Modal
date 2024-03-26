@@ -1,0 +1,29 @@
+@implements IModalDialog
+
+<h3>ModalDialog</h3>
+<button @onclick="CloseModalAsync">
+    Close From Modal
+</button>
+<CascadingValue Value="@this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private RenderFragment ChildContent { get; set; } = default!;
+    [Parameter]
+    public IModal Modal { get; set; } = default!;
+    [Parameter] public ModalModel Model { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        ChildContent = builder =>
+        {
+            builder.OpenComponent(0, Model.ContentType);
+            builder.CloseComponent();
+        };
+        base.OnInitialized();
+    }
+
+    public Task CloseModalAsync()
+        => Modal.CloseModalAsync(Model.ContentType);
+}

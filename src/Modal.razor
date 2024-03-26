@@ -1,12 +1,10 @@
-<CascadingValue Value="@this">
-    @if (Dictionary.Any())
+@if (Dictionary.Any())
+{
+    @foreach (var component in Dictionary)
     {
-        @foreach (var component in Dictionary)
-        {
-            @component.Value
-        }
+        @component.Value
     }
-</CascadingValue>
+}
 
 
 @implements IDisposable
@@ -25,19 +23,21 @@
 
     private async void HandleCreateModal(object? sender, CreateModalEventArgs args)
     {
-        if(Dictionary. ContainsKey(args.Type))
+        if (Dictionary.ContainsKey(args.Type))
             return;
-        
+
         Dictionary.Add(args.Type, builder =>
         {
             // add modal in here
             // add model to modal
-            builder.OpenComponent(0, args.Type);
+            builder.OpenComponent<ModalDialog>(0);
+            builder.AddAttribute(1, "Model", args.Model);
+            builder.AddAttribute(2, "Modal", this);
             builder.CloseComponent();
         });
         await InvokeAsync(StateHasChanged);
     }
-    
+
     public async Task CloseModalAsync(Type type)
     {
         if (!Dictionary.ContainsKey(type))
@@ -50,4 +50,5 @@
     {
         ModalManager.OnCreateModal -= HandleCreateModal;
     }
+
 }

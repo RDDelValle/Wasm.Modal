@@ -4,5 +4,5 @@ namespace Wasm.Modal;
 
 public abstract class ModalContentBase : ComponentBase
 {
-    [CascadingParameter] public IModal Modal { get; set; } = default!;
+    [CascadingParameter] public IModalDialog ModalDialog { get; set; } = default!;
 }
