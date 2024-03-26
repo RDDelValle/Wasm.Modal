@@ -2,6 +2,34 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Wasm Modal</h1>
 
-Welcome to your new app.
+<button @onclick="Create1">
+    Create Modal 1
+</button>
+<button @onclick="Create2">
+    Create Modal 2
+</button>
+<button @onclick="Create3">
+    Create Modal 3
+</button>
+
+@inject IModalManager ModalManager
+@code {
+
+    private async Task Create1()
+    {
+        await ModalManager.CreateModalAsync<TestContent1>();
+    }
+    
+    private async Task Create2()
+    {
+        await ModalManager.CreateModalAsync<TestContent2>();
+    }
+    
+    private async Task Create3()
+    {
+        await ModalManager.CreateModalAsync<TestContent3>();
+    }
+
+}

@@ -1,7 +1,53 @@
-<div class="modal">
-    
-</div>
+<CascadingValue Value="@this">
+    @if (Dictionary.Any())
+    {
+        @foreach (var component in Dictionary)
+        {
+            @component.Value
+        }
+    }
+</CascadingValue>
+
+
+@implements IDisposable
+@implements IModal
+@inject IModalManager ModalManager
 
 @code {
+
+    private Dictionary<Type, RenderFragment> Dictionary { get; } = [];
+
+    protected override void OnInitialized()
+    {
+        ModalManager.OnCreateModal += HandleCreateModal;
+        base.OnInitialized();
+    }
+
+    private async void HandleCreateModal(object? sender, CreateModalEventArgs args)
+    {
+        if(Dictionary. ContainsKey(args.Type))
+            return;
+        
+        Dictionary.Add(args.Type, builder =>
+        {
+            // add modal in here
+            // add model to modal
+            builder.OpenComponent(0, args.Type);
+            builder.CloseComponent();
+        });
+        await InvokeAsync(StateHasChanged);
+    }
     
+    public async Task CloseModalAsync(Type type)
+    {
+        if (!Dictionary.ContainsKey(type))
+            return;
+        Dictionary.Remove(type);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ModalManager.OnCreateModal -= HandleCreateModal;
+    }
 }

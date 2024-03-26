@@ -1,0 +1,12 @@
+@inherits ModalContentBase
+<h3>TestContent1</h3>
+<button @onclick="HandleCloseClick">
+    Close
+</button>
+
+@code {
+
+    private Task HandleCloseClick()
+        => Modal.CloseModalAsync(GetType());
+
+}
