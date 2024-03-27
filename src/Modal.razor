@@ -5,7 +5,7 @@
          aria-modal="true" role="dialog" tabindex="-1"
          aria-labelledby="@($"{Dictionary.Last().Value.ChildContentType}Title")">@* fade show *@
         
-        <div class="modal-backdrop" @onclick="HandleBackdropClick"></div>@* fade show *@
+        <div class="@BackdropClass" @onclick="HandleBackdropClick"></div>@* fade show *@
         
         @foreach (var component in Dictionary)
         {
@@ -25,6 +25,25 @@
 
     private Dictionary<Type, ModalModel> Dictionary { get; } = [];
 
+    private string BackdropClass
+    {
+        get
+        {
+            var value = "modal-backdrop";
+            if (_showingBackdrop)
+                value += " showing";
+            if (_showBackdrop)
+                value += " show";
+            if (_hidingBackdrop)
+                value += " hiding";
+            return value;
+        }
+    }
+
+    private bool _showBackdrop;
+    private bool _showingBackdrop;
+    private bool _hidingBackdrop;
+
     protected override void OnInitialized()
     {
         ModalManager.OnCreateModal += HandleCreateModal;
@@ -35,6 +54,14 @@
     {
         if (!Dictionary.ContainsKey(type))
             return;
+        if (Dictionary.Count == 1)
+        {
+            _hidingBackdrop = true;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(300);
+            _hidingBackdrop = false;
+            _showBackdrop = false;
+        }
         Dictionary.Remove(type);
         await InvokeAsync(StateHasChanged);
     }
@@ -43,8 +70,13 @@
     {
         if (Dictionary.ContainsKey(args.Model.ChildContentType))
             return;
-
         Dictionary.Add(args.Model.ChildContentType, args.Model);
+        await InvokeAsync(StateHasChanged);
+        _showingBackdrop = true;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(300);
+        _showingBackdrop = false;
+        _showBackdrop = true;
         await InvokeAsync(StateHasChanged);
     }
 
@@ -53,7 +85,13 @@
         var model = Dictionary.Last().Value;
         if (model.HasStaticBackdrop)
             return;
-        await CloseModalDialogAsync(model.ChildContentType);
+        if (Dictionary.Count == 1)
+        {
+            _showBackdrop = false;
+        }
+        // no animation just kill the chain it
+        Dictionary.Remove(model.ChildContentType);
+        await InvokeAsync(StateHasChanged);
     }
     
     private RenderFragment CreateComponent(Type type)

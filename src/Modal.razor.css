@@ -4,4 +4,33 @@
 
 .modal-backdrop {
   z-index: -1;
+  opacity: 0;
+}
+.modal-backdrop.show {
+  opacity: var(--bs-backdrop-opacity);
+}
+.modal-backdrop.showing {
+  animation-duration: 300ms;
+  animation-name: fadeIn;
+}
+.modal-backdrop.hiding {
+  animation-duration: 300ms;
+  animation-name: fadeOut;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: var(--bs-backdrop-opacity);
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: var(--bs-backdrop-opacity);
+  }
+  to {
+    opacity: 0;
+  }
 }

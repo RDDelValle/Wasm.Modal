@@ -1,5 +1,5 @@
 @implements IModalDialog
-<div class="modal-dialog">
+<div class="@Class">
     <div class="modal-content">
         <div class="modal-header">
             <h1 id="@($"{Model.ChildContentType}Title")" class="h5">@Model.Title</h1>
@@ -18,14 +18,52 @@
 
 @code {
 
+    private bool _showing;
+    private bool _show;
+    private bool _hiding;
+    
+    private string Class
+    {
+        get
+        {
+            var value = "modal-dialog";
+            if (_showing)
+                value += " showing";
+            if (_show)
+                value += " show";
+            if (_hiding)
+                value += " hiding";
+            return value;
+        }
+    }
+    
     [Parameter] public IModal ParentModal { get; set; } = default!;
     [Parameter] public ModalModel Model { get; set; } = default!;
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    public Task CloseAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        ParentModal.CloseModalDialogAsync(Model.ChildContentType);
-        return Task.CompletedTask;
+        if (firstRender)
+        {
+            _showing = true;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(300);
+            _showing = false;
+            _show = true;
+            await InvokeAsync(StateHasChanged);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task CloseAsync()
+    {
+        _hiding = true;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(300);
+        _hiding = false;
+        _show = false;
+        await ParentModal.CloseModalDialogAsync(Model.ChildContentType);
     }
 
 }
