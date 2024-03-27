@@ -2,7 +2,7 @@
 <div class="@Class">
     <div class="modal-content">
         <div class="modal-header">
-            <h1 id="@($"{Model.ChildContentType}Title")" class="h5">@Model.Title</h1>
+            <h5 id="@($"{Model.ChildContentType}Title")" class="modal-title">@Model.Title</h5>
            @if (!Model.HideCloseButton)
             {
                 <button class="btn-close" type="button" aria-label="close" @onclick="CloseAsync"></button>
