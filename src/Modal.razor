@@ -1,11 +1,21 @@
 @if (Dictionary.Any())
 {
-    @foreach (var component in Dictionary)
-    {
-        @component.Value
-    }
+    
+    <div class="modal" id="modal"
+         aria-modal="true" role="dialog" tabindex="-1"
+         aria-labelledby="@($"{Dictionary.Last().Value.ChildContentType}Title")">@* fade show *@
+        
+        <div class="modal-backdrop" @onclick="HandleBackdropClick"></div>@* fade show *@
+        
+        @foreach (var component in Dictionary)
+        {
+            <ModalDialog Model="@component.Value" ParentModal="@this">
+                @CreateComponent(component.Value.ChildContentType)
+            </ModalDialog>
+        }
+        
+    </div>
 }
-
 
 @implements IDisposable
 @implements IModal
@@ -13,7 +23,7 @@
 
 @code {
 
-    private Dictionary<Type, RenderFragment> Dictionary { get; } = [];
+    private Dictionary<Type, ModalModel> Dictionary { get; } = [];
 
     protected override void OnInitialized()
     {
@@ -21,24 +31,7 @@
         base.OnInitialized();
     }
 
-    private async void HandleCreateModal(object? sender, CreateModalEventArgs args)
-    {
-        if (Dictionary.ContainsKey(args.Type))
-            return;
-
-        Dictionary.Add(args.Type, builder =>
-        {
-            // add modal in here
-            // add model to modal
-            builder.OpenComponent<ModalDialog>(0);
-            builder.AddAttribute(1, "Model", args.Model);
-            builder.AddAttribute(2, "Modal", this);
-            builder.CloseComponent();
-        });
-        await InvokeAsync(StateHasChanged);
-    }
-
-    public async Task CloseModalAsync(Type type)
+    public async Task CloseModalDialogAsync(Type type)
     {
         if (!Dictionary.ContainsKey(type))
             return;
@@ -46,6 +39,32 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    private async void HandleCreateModal(object? sender, CreateModalEventArgs args)
+    {
+        if (Dictionary.ContainsKey(args.Model.ChildContentType))
+            return;
+
+        Dictionary.Add(args.Model.ChildContentType, args.Model);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleBackdropClick()
+    {
+        var model = Dictionary.Last().Value;
+        if (model.HasStaticBackdrop)
+            return;
+        await CloseModalDialogAsync(model.ChildContentType);
+    }
+    
+    private RenderFragment CreateComponent(Type type)
+    {
+        return builder =>
+        {
+            builder.OpenComponent(0, type);
+            builder.CloseComponent();
+        };
+    }
+    
     public void Dispose()
     {
         ModalManager.OnCreateModal -= HandleCreateModal;

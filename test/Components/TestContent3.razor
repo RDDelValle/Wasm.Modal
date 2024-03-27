@@ -1,12 +1,3 @@
-@inherits ModalContentBase
-<h3>TestContent3</h3>
-<button @onclick="HandleCloseClick">
-    Close
-</button>
 
-@code {
+ <p>Woo-hoo, you're reading this text in a modal!</p>
 
-    private Task HandleCloseClick()
-        => ModalDialog.CloseModalAsync();
-
-}

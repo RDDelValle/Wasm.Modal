@@ -2,5 +2,5 @@ namespace Wasm.Modal;
 
 public interface IModal
 {
-    Task CloseModalAsync(Type type);
+    Task CloseModalDialogAsync(Type type);
 }

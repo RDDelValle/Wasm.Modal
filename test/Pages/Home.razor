@@ -19,17 +19,17 @@
 
     private async Task Create1()
     {
-        await ModalManager.CreateModalAsync<TestContent1>();
+        await ModalManager.CreateModalAsync<TestContent1>("TestContent1", hasStaticBackdrop: false, hideCloseButton:true);
     }
     
     private async Task Create2()
     {
-        await ModalManager.CreateModalAsync<TestContent2>();
+        await ModalManager.CreateModalAsync<TestContent2>("TestContent2", hasStaticBackdrop: true);
     }
     
     private async Task Create3()
     {
-        await ModalManager.CreateModalAsync<TestContent3>();
+        await ModalManager.CreateModalAsync<TestContent3>("TestContent3", hasStaticBackdrop: true, hideCloseButton: true);
     }
 
 }

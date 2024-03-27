@@ -11,9 +11,9 @@ internal class ModalManager : IModalManager
         remove => _onCreateModal -= value;
     }
 
-    public ValueTask CreateModalAsync<T>(string? title = null, bool staticBackdrop = true) where T: ModalContentBase
+    public ValueTask CreateModalAsync<T>(string title, bool hasStaticBackdrop = false, bool hideCloseButton = false) where T: IComponent
     {
-        _onCreateModal?.Invoke(this, new CreateModalEventArgs(typeof(T), new ModalModel(typeof(T), title, staticBackdrop)));
+        _onCreateModal?.Invoke(this, new CreateModalEventArgs(new ModalModel(typeof(T), title, hasStaticBackdrop, hideCloseButton)));
         return ValueTask.CompletedTask;
     }
 }

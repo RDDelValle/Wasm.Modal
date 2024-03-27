@@ -1,29 +1,31 @@
 @implements IModalDialog
-
-<h3>ModalDialog</h3>
-<button @onclick="CloseModalAsync">
-    Close From Modal
-</button>
-<CascadingValue Value="@this">
-    @ChildContent
-</CascadingValue>
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h1 id="@($"{Model.ChildContentType}Title")" class="h5">@Model.Title</h1>
+           @if (!Model.HideCloseButton)
+            {
+                <button class="btn-close" type="button" aria-label="close" @onclick="CloseAsync"></button>
+            }
+        </div>
+        <div class="modal-body">
+            <CascadingValue Value="@this">
+                 @ChildContent
+            </CascadingValue>
+        </div>
+    </div>
+</div>
 
 @code {
-    private RenderFragment ChildContent { get; set; } = default!;
-    [Parameter]
-    public IModal Modal { get; set; } = default!;
-    [Parameter] public ModalModel Model { get; set; } = default!;
 
-    protected override void OnInitialized()
+    [Parameter] public IModal ParentModal { get; set; } = default!;
+    [Parameter] public ModalModel Model { get; set; } = default!;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    public Task CloseAsync()
     {
-        ChildContent = builder =>
-        {
-            builder.OpenComponent(0, Model.ContentType);
-            builder.CloseComponent();
-        };
-        base.OnInitialized();
+        ParentModal.CloseModalDialogAsync(Model.ChildContentType);
+        return Task.CompletedTask;
     }
 
-    public Task CloseModalAsync()
-        => Modal.CloseModalAsync(Model.ContentType);
 }
