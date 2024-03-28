@@ -72,6 +72,10 @@
             return;
         Dictionary.Add(args.Model.ChildContentType, args.Model);
         await InvokeAsync(StateHasChanged);
+        
+        if(_showBackdrop)
+            return;
+        
         _showingBackdrop = true;
         await InvokeAsync(StateHasChanged);
         await Task.Delay(300);
